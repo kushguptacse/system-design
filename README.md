@@ -1,10 +1,66 @@
-# system-design
-Scalability -
-1.Horizontal and vertical scalability.
-1.1 Increasing capacity of single machine is vertical scaling. Increasing number of machine is horizontal scaling. 
-1.2 server can be taken on premise or from cloud provider like aws, gcp, azure. And if we want to execute some code without need of server serverless option can be used like lambda. 
-2. Database scaling : how database can be scalled and handle fail over. 
-2.1 cold standby: from primary db periodic back up is taken into disk. So in case of failure of db server, a new stand by server can be setup to restore from back up. In this approach downtime will be more till stand by is getting data restored from last successful back up.
-2.2 warm standby: in this approach secondary db will keep on syncing with primary using replication. So in case primary goes down secondary already ready to serve. Just a switch seconds needed.
-2.3 hot standby: in this approach stand up by database is synced real time and is no longer just stand by, it will be used to handle read request. So if primary goes down it can handle write also and parallelly separate db can be made ready to join it as standby.
-2.4 multi-primary: in this approach primary and secondary both can read and write simultaneously and hence traffic also reduced. It is kind of similar to horizontal scaling of server. 
+# System Design
+
+## 1. Scalability
+
+### 1.1 Types of Scaling
+
+- **Vertical Scaling (Scale Up)**
+  - Increase capacity of a single machine (CPU, RAM, disk).
+- **Horizontal Scaling (Scale Out)**
+  - Increase number of machines/instances.
+
+### 1.2 Infrastructure Options
+
+- **On-premise servers**
+- **Cloud providers**
+  - AWS
+  - GCP
+  - Azure
+- **Serverless**
+  - Execute code without managing servers (e.g., AWS Lambda)
+
+---
+
+## 2. Database Scaling and Failover
+
+### 2.1 Cold Standby
+
+- Periodic backups are taken from the primary database and stored on disk.
+- In case of failure:
+  - A new standby server is created.
+  - Data is restored from the latest backup.
+- **Pros:** Simple and low cost.
+- **Cons:** High downtime and possible data loss since last backup.
+
+---
+
+### 2.2 Warm Standby
+
+- Secondary database continuously syncs with primary using replication.
+- In case of primary failure:
+  - Traffic is switched to secondary within seconds.
+- **Pros:** Low downtime.
+- **Cons:** Secondary usually handles no traffic until failover.
+
+---
+
+### 2.3 Hot Standby
+
+- Standby database is synced in near real-time.
+- Standby also serves **read traffic**.
+- In case of primary failure:
+  - Standby can immediately start handling writes.
+  - A new standby can be added.
+- **Pros:** Very low downtime, better resource utilization.
+- **Cons:** More complex and higher cost.
+
+---
+
+### 2.4 Multi-Primary (Multi-Master)
+
+- Multiple databases can read and write simultaneously.
+- Traffic is distributed across multiple primaries.
+- **Pros:** High availability and horizontal write scaling.
+- **Cons:** Data conflict resolution is complex.
+
+---
