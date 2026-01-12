@@ -130,5 +130,15 @@
 - Advantages:
   - Less storage (no duplication)
   - Updates happen in one place
-- Disadva
+- Disadvantages:
+  - Requires joins for reads
+
+**De-normalized Data:**
+- Data is stored in a single place instead of multiple tables.
+- Advantages:
+  - Faster and simpler reads
+- Disadvantages:
+  - More storage required
+  - Updates are harder and error-prone
+
 
