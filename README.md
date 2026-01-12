@@ -65,30 +65,70 @@
 
 ---
 
-## 3. Database Sharding (true horizontal scaling)
-- All above approaches is kind of vertical scaling as data resides in single instance. Via sharding data will be stored in multiple places and distributed according to shard-key. and each shard will have it's own backup.
-- Combining data on basis of multiple shards is complicated, so design shards accordingly that single shard would be good enough to answer query. e.g. shard key: users with id 1000-5000 empID.
+## 3. Database Sharding (True Horizontal Scaling)
+
+- All above approaches are kind of **vertical scaling**, as data resides in a single instance.
+- Via **sharding**, data is stored in multiple places and distributed according to a **shard key**.
+- Each shard has its **own backup**.
+- Combining data across multiple shards is complicated, so shards should be designed in a way that a **single shard can answer most queries**.
+  - Example shard key: users with `empId` range `1000–5000`
+
+---
+
 ### 3.1 MongoDB Architecture
+
 #### 3.1.1 Shard
-A MongoDB instance or replica set that stores a subset of data.
+- A MongoDB instance or replica set that stores a subset of data.
+
 #### 3.1.2 Config Servers
-Store cluster metadata and chunk mapping.
+- Store cluster metadata and chunk mapping.
+
 #### 3.1.3 mongos (Query Router)
-Routes client queries to appropriate shards.
+- Routes client queries to the appropriate shards.
+
 #### 3.1.4 Replica Set Structure
-Primary: Handles all writes
-Secondary: Replicates data from primary
-Arbiter (optional): Participates in elections, stores no data
-Downside is that nodes are sitting idle with only primary handling write traffic and with readConfigured secondary can provide read feature. but by this system is partition tolerant and consitant as only primary handle write and read by default. and less available as if primary goes down it will take few seconds to elect new leader.
-### 3.2 Cassandra  architecture
-Masterless (peer-to-peer) Archictecture where nodes are part of rings structure.
-All nodes are equal and can accept reads/writes.
-It provide eventual consitency as all node can read write so data written in 1 node. but it is high available and partition tolerant.
+- **Primary**: Handles all writes  
+- **Secondary**: Replicates data from the primary  
+- **Arbiter (optional)**: Participates in elections, stores no data  
+
+**Downside:**
+- Only the primary handles write traffic.
+- By default, reads also go to the primary (secondaries can serve reads if configured).
+- System is **Partition Tolerant** and **Consistent** since only the primary handles writes.
+- Availability is lower because if the primary goes down, a few seconds are required to elect a new leader.
+
+---
+
+### 3.2 Cassandra Architecture
+
+- **Masterless (peer-to-peer)** architecture.
+- Nodes are part of a **ring structure**.
+- All nodes are equal and can accept **reads and writes**.
+- Provides **eventual consistency**, since data can be written to any node.
+- Highly **Available** and **Partition Tolerant**.
+
+---
 
 ### 3.3 Celebrity Problem
-Let say userId is taken as shard key and there is a users who has more fanbase and hence more queries. so in this case even with this shard key system might fail for that celeb. So, to To Solve such scenerio sharding can be done by further division of data like celebId#1 + celebId#2 + ..... + celebId#N on different node and cache celeb data aggressively on basis of hit count.
 
-### 3.4 Data DeNormalization
-In traditional relational database data is saved in multiple tables with id used as primary and foreign key. This is called normalized data. 
-It takes less spaces as data is not duplicated, update in only one table. it requires join to fetch data.
-In De-Normlized table data is stored in single place instead of two. this make read faster and easy. updates are hard and more storage space required.
+- Suppose `userId` is used as the shard key.
+- A celebrity user with a large fanbase generates a very high number of queries.
+- Even with sharding, a single shard may become overloaded.
+
+**Solution:**
+- Further divide data using composite keys like:  
+  `celebId#1`, `celebId#2`, … `celebId#N`
+- Distribute these across different nodes.
+- Cache celebrity data aggressively based on hit count.
+
+---
+
+### 3.4 Data De-normalization
+
+- In traditional relational databases, data is stored in multiple tables using **primary and foreign keys**.
+- This is called **normalized data**.
+- Advantages:
+  - Less storage (no duplication)
+  - Updates happen in one place
+- Disadva
+
